@@ -14,14 +14,28 @@
 #	Effects: prints the string to a terminal
 .def PRINT 0x0003
 
-set s0 Hello_World_Str
-add s0 s0 bp
+addi s0 bp Hello_World_Str
 
-set t0 PRINT
-callr t0
+addi s1 zero PRINT
+callr s1
 
-set s0 0
-set t0 EXIT
+addi s6 zero 256			
+stw one RAM(bp)	#Each string will be 1 long
+
+addi s0 bp RAM            #We will print the 2 words after RAM
+
+LOOP:
+sub s6 s6 one
+stw s6 RAM+1(bp)
+
+addi s1 zero PRINT			#
+callr s1
+
+bnez s6 LOOP
+
+
+addi s0 zero 0
+addi t0 zero EXIT
 callr t0
 
 Hello_World_Str:
@@ -38,3 +52,4 @@ Hello_World_Str:
 	.word 0x6C
 	.word 0x64
 	.word 0x21
+RAM:

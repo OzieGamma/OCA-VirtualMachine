@@ -29,7 +29,7 @@ let registers = Array.create 126 0u
 
 let imm16value imm = 
     match imm with
-    | Imm16.Value immV -> uint32 immV
+    | Imm16.Value immV -> uint32 (int32 (int16 immV))
     | _ -> failwithf "Unsupported imm value %A" imm
 
 let readRegister r = 
@@ -61,7 +61,7 @@ let execExit() : unit =
 
 let execPrint() : unit = 
     let str = readString (reg "s0")
-    printfn "Program-output: %s" str
+    printf "%s" str
 
 let rec exec address : unit = 
     if address < basePointer then 
@@ -85,8 +85,8 @@ let rec exec address : unit =
         | Stw(rB, imm, rA) -> 
             writeMemory imm rA (readRegister rB)
             exec (address + 1u)
-        | Set(rS, imm) -> 
-            writeRegister rS (imm16value imm)
+        | Addi(rS, rA, imm) -> 
+            writeRegister rS ((readRegister rA) + (imm16value imm))
             exec (address + 1u)
         | Add(rS, rA, rB) -> 
             execOp rS rA rB (fun a b -> a + b)
@@ -143,16 +143,12 @@ let rec exec address : unit =
                 else 0u)
             exec (address + 1u)
         | Bnez(rA, imm) -> 
-            if (readRegister rA) <> 0u then 
-                exec (address + (imm16value imm))
-                exec (address + 1u)
+            if (readRegister rA) <> 0u then exec (address + imm16value imm)
         | Beqz(rA, imm) -> 
-            if (readRegister rA) = 0u then 
-                exec (address + (imm16value imm))
-                exec (address + 1u)
+            if (readRegister rA) = 0u then exec (address + imm16value imm)
         | Calli imm -> 
             writeRegister ra (address + 1u)
-            exec (address + (imm16value imm))
+            exec (address + imm16value imm)
         | Callr rA -> 
             let newAddr = readRegister rA
             writeRegister ra (address + 1u)
@@ -177,5 +173,4 @@ let main argv =
             memory.[i] <- binData.[i]
         writeRegister bp basePointer
         exec basePointer
-        System.Console.Read() |> ignore
     0 // return an integer exit code

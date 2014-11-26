@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>57b5e3ee-68de-4ebe-85fb-005987ff7f27</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>OCA_VirtualMachine</RootNamespace>
-    <AssemblyName>OCA_VirtualMachine</AssemblyName>
+    <RootNamespace>OCA.VirtualMachine</RootNamespace>
+    <AssemblyName>OCA.VirtualMachine</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.3.1.0</TargetFSharpCoreVersion>
