@@ -19,7 +19,7 @@ module OCA.VirtualMachine.Program
 
 open OCA.AsmLib
 
-let reg r = Register.fromFriendly r |> Attempt.get
+let reg r = Register.fromFriendly r |> Attempt.get id
 let bp = reg "bp"
 let sp = reg "sp"
 let ra = reg "ra"
@@ -75,7 +75,7 @@ let rec exec address : unit =
         let instr = 
             memory.[int (address - basePointer)]
             |> Instr.fromBin
-            |> Attempt.get
+            |> Attempt.get id
         
         let inline execOp rS rA rB f = writeRegister rS (f (readRegister rA) (readRegister rB))
         match instr with
@@ -144,8 +144,10 @@ let rec exec address : unit =
             exec (address + 1u)
         | Bnez(rA, imm) -> 
             if (readRegister rA) <> 0u then exec (address + imm16value imm)
+            else exec (address + 1u)
         | Beqz(rA, imm) -> 
             if (readRegister rA) = 0u then exec (address + imm16value imm)
+            else exec (address + 1u)
         | Calli imm -> 
             writeRegister ra (address + 1u)
             exec (address + imm16value imm)
@@ -171,6 +173,7 @@ let main argv =
         let binData = System.IO.File.ReadAllBytes(argv.[0]) |> toUint32Array
         for i = 0 to binData.Length - 1 do
             memory.[i] <- binData.[i]
+        writeRegister sp 5000u
         writeRegister bp basePointer
         exec basePointer
     0 // return an integer exit code
