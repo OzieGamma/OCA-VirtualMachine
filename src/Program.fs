@@ -19,7 +19,7 @@ module OCA.VirtualMachine.Program
 
 open OCA.AsmLib
 
-let reg r = Register.fromFriendly r |> Attempt.get id
+let reg r = Register.fromToken (Id r) |> Attempt.get id
 let bp = reg "bp"
 let sp = reg "sp"
 let ra = reg "ra"
@@ -29,7 +29,7 @@ let registers = Array.create 126 0u
 
 let imm16value imm = 
     match imm with
-    | Imm16.Value immV -> uint32 (int32 (int16 immV))
+    | Imm.Value immV -> uint32 (int32 (int16 immV))
     | _ -> failwithf "Unsupported imm value %A" imm
 
 let readRegister r = 
@@ -52,8 +52,8 @@ let readMemory imm r = memory.[int ((imm16value imm) + (readRegister r) - basePo
 let writeMemory imm r v = memory.[int ((imm16value imm) + (readRegister r) - basePointer)] <- v
 
 let readString r = 
-    let length = readMemory (Imm16.Value 0us) r
-    Array.init (int length) (fun i -> readMemory (Imm16.Value(uint16 i + 1us)) r |> byte) |> System.Text.ASCIIEncoding.ASCII.GetString
+    let length = readMemory (Imm.Value 0L) r
+    Array.init (int length) (fun i -> readMemory (Imm.Value(int64 i + 1L)) r |> byte) |> System.Text.ASCIIEncoding.ASCII.GetString
 
 let execExit() : unit = 
     let exitCode = readRegister (reg "s0")
@@ -79,10 +79,10 @@ let rec exec address : unit =
         
         let inline execOp rS rA rB f = writeRegister rS (f (readRegister rA) (readRegister rB))
         match instr with
-        | Ldw(rS, imm, rA) -> 
+        | Ldw(rS, rA, imm) -> 
             writeRegister rS (readMemory imm rA)
             exec (address + 1u)
-        | Stw(rB, imm, rA) -> 
+        | Stw(rB, rA, imm) -> 
             writeMemory imm rA (readRegister rB)
             exec (address + 1u)
         | Addi(rS, rA, imm) -> 

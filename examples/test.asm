@@ -16,7 +16,8 @@
 .def PRINT 0x0003
 
 addi s0 bp Hello_World_Str
-addi s1 zero 0x0A
+addi s1 zero 0x72
+calli PRINTLN
 calli STR_CONTAINS
 
 addi s0 t0 0
@@ -34,10 +35,10 @@ callr t0
 #	Effects: prints the string to a terminal with a \n at the end
 PRINTLN:
 	# Put ra on the stack
-	sub sp sp one
-	sub sp sp one
-	stw ra 0(sp)
-	stw s0 1(sp)
+	addi sp sp -3
+	stw ra sp(0)
+	stw s0 sp(1)
+	stw s1 sp(2)
 	
 	# Print the string
 	addi s1 zero PRINT
@@ -48,9 +49,10 @@ PRINTLN:
 	callr s1
 	
 	# Remove ra from the stack
-	ldw ra 0(sp)
-	ldw s0 1(sp)
-	addi sp sp 2
+	ldw ra sp(0)
+	ldw s0 sp(1)
+	ldw s1 sp(2)
+	addi sp sp 3
 	
 	ret
 
@@ -63,8 +65,8 @@ BOOL_PRINTLN:
 	# Put ra on the stack
 	sub sp sp one
 	sub sp sp one
-	stw ra 0(sp)
-	stw s0 1(sp)
+	stw ra sp(0)
+	stw s0 sp(1)
 	
 	beqz s0 else
 	addi s0 bp True_Str
@@ -77,8 +79,8 @@ BOOL_PRINTLN:
 	calli PRINTLN
 		
 	# Remove ra from the stack
-	ldw ra 0(sp)
-	ldw s0 1(sp)
+	ldw ra sp(0)
+	ldw s0 sp(1)
 	addi sp sp 2
 	
 	ret
@@ -93,13 +95,13 @@ STR_CONTAINS:
 	add t0 zero zero
 	add t2 s0 one # first index of str
 	
-	ldw t1 0(s0) # t1 = length
+	ldw t1 s0(0) # t1 = length
 	add t3 t2 t1 #t3 = first index after str
 	
 	STR_CONTAINS_LOOP:
 	compeq t4 t2 t3
 	bnez t4 STR_CONTAINS_END
-		ldw t5 0(t2)
+		ldw t5 t2(0)
 		compeq t0 t5 s1
 		bnez t0 STR_CONTAINS_END
 		

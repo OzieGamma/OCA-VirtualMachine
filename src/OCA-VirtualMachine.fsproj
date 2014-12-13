@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\OCA_VirtualMachine.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\OCA.VirtualMachine.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
     <StartWorkingDirectory>C:\Users\Oswald\Documents\GitHub\OCA-VirtualMachine\examples\</StartWorkingDirectory>
     <StartArguments>test.bin</StartArguments>
@@ -36,7 +36,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Release\OCA_VirtualMachine.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\OCA.VirtualMachine.XML</DocumentationFile>
     <Prefer32Bit>true</Prefer32Bit>
     <StartWorkingDirectory>C:\Users\Oswald\Documents\GitHub\OCA-VirtualMachine\examples\</StartWorkingDirectory>
     <StartArguments>.\test.bin</StartArguments>
@@ -51,6 +51,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Kernel.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>
